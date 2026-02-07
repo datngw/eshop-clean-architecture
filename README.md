@@ -84,13 +84,6 @@ CleanArchitecture.sln
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Domain Aggregates
-
-- **Products** - Product catalog with pricing
-- **Categories** - Product categorization
-- **Baskets** - Shopping cart per user
-- **Orders** - Order processing and history
-
 ## 📋 Requirements
 
 - **.NET 8 SDK** or later
@@ -395,18 +388,6 @@ Hangfire is used for background job processing with the **Outbox Pattern**.
 1. Ensure the JWT key in `security.json` is at least 32 characters
 2. Verify token expiration settings
 3. Check the Authorization header format: `Bearer <token>`
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-Unknown (No LICENSE file found in repository)
 
 ---
 
