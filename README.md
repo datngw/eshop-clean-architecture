@@ -1,6 +1,6 @@
 # 🛒 EShop Clean Architecture
 
-A production-ready e-commerce API built with **.NET 8** following **Clean Architecture** principles. This solution demonstrates best practices for building scalable, maintainable, and testable enterprise applications.
+A practice-focused e-commerce API built with **.NET 8** following **Clean Architecture** principles. This project is for learning and showcasing best practices for building scalable, maintainable, and testable applications.
 
 ## 📋 Overview
 
@@ -151,118 +151,6 @@ Configuration files are located in `src/API/CleanArchitecture.Api/Configurations
 | `logger.json` | Serilog logging configuration |
 | `signalr.json` | SignalR backplane settings |
 | `outbox.json` | Outbox pattern settings |
-
-### Environment Variables / Configuration Keys
-
-| Key | Description | Default |
-|-----|-------------|---------|
-| `ConnectionStrings:DefaultConnection` | SQL Server connection string | See `database.json` |
-| `SecuritySettings:JwtSettings:key` | JWT signing key | (See `security.json`) |
-| `SecuritySettings:JwtSettings:tokenExpirationInMinutes` | Token expiry | `60` |
-| `SecuritySettings:JwtSettings:refreshTokenExpirationInDays` | Refresh token expiry | `7` |
-| `CacheSettings:UseDistributedCache` | Enable distributed cache | `false` |
-| `CacheSettings:PreferRedis` | Use Redis for caching | `false` |
-| `CacheSettings:RedisURL` | Redis connection URL | `localhost:6379` |
-| `MailSettings:Host` | SMTP server host | `smtp.gmail.com` |
-| `MailSettings:Port` | SMTP server port | `587` |
-| `HangfireSettings:Route` | Hangfire dashboard route | `/jobs` |
-| `SignalRSettings:UseBackplane` | Enable SignalR backplane | `false` |
-
-### Logging Configuration
-
-Serilog is configured to write logs to both console and rolling file:
-
-```json
-{
-  "LoggerSettings": {
-    "Serilog": {
-      "MinimumLevel": { "Default": "Error" },
-      "WriteTo": [
-        { "Name": "Console" },
-        { "Name": "File", "Args": { "path": "logs/log-.txt", "rollingInterval": "Day" } }
-      ]
-    }
-  }
-}
-```
-
-## 🔌 API Endpoints
-
-**Base URL:** `https://localhost:7047/api`
-
-### Authentication
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| `POST` | `/Auth/login` | User login | ❌ |
-| `POST` | `/Auth/refresh` | Refresh access token | ❌ |
-
-### Users
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| `GET` | `/Users` | Get all users | ✅ Permission |
-| `GET` | `/Users/{id}` | Get user by ID | ✅ Permission |
-| `POST` | `/Users` | Create user | ✅ Permission |
-| `POST` | `/Users/self-register` | Self registration | ❌ |
-| `GET` | `/Users/{id}/roles` | Get user roles | ✅ Permission |
-| `POST` | `/Users/{id}/roles` | Assign roles | ✅ Permission |
-| `POST` | `/Users/{id}/toggle-status` | Toggle user status | ✅ Permission |
-| `GET` | `/Users/confirm-email` | Confirm email | ❌ |
-| `POST` | `/Users/forgot-password` | Request password reset | ❌ |
-| `POST` | `/Users/reset-password` | Reset password | ✅ |
-
-### Roles
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| `GET` | `/Roles` | Get all roles | ✅ Permission |
-| `GET` | `/Roles/{id}` | Get role by ID | ✅ Permission |
-| `GET` | `/Roles/{id}/permissions` | Get role permissions | ✅ Permission |
-| `PUT` | `/Roles/{id}/permissions` | Update role permissions | ✅ Permission |
-| `POST` | `/Roles` | Create role | ✅ Permission |
-| `DELETE` | `/Roles/{id}` | Delete role | ✅ Permission |
-
-### Products (V1)
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| `POST` | `/api/v1/Product/paginated` | Get paginated products | ❌ |
-| `GET` | `/api/v1/Product/{id}` | Get product by ID | ❌ |
-| `POST` | `/api/v1/Product` | Create product | ✅ Permission |
-| `PUT` | `/api/v1/Product` | Update product | ✅ Permission |
-| `DELETE` | `/api/v1/Product/{id}` | Delete product | ✅ Permission |
-
-### Categories (V1)
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| `POST` | `/api/v1/Category/paginated` | Get paginated categories | ❌ |
-| `GET` | `/api/v1/Category/{id}` | Get category by ID | ❌ |
-| `POST` | `/api/v1/Category` | Create category | ✅ Permission |
-| `PUT` | `/api/v1/Category/{id}` | Update category | ✅ Permission |
-| `DELETE` | `/api/v1/Category/{id}` | Delete category | ✅ Permission |
-
-### Baskets (V1)
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| `GET` | `/api/v1/Basket` | Get user's basket | ✅ |
-| `POST` | `/api/v1/Basket` | Add item to basket | ✅ |
-| `DELETE` | `/api/v1/Basket/remove-product-item` | Remove item from basket | ✅ |
-| `DELETE` | `/api/v1/Basket/clear-basket` | Clear basket | ✅ |
-| `POST` | `/api/v1/Basket/check-out` | Checkout | ✅ |
-
-### Orders (V1)
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| `POST` | `/api/v1/Order` | Get orders by user ID | ✅ |
-| `GET` | `/api/v1/Order` | Get order by ID | ✅ |
-
-### Swagger / OpenAPI
-
-Swagger UI is available at: `https://localhost:7047/swagger`
 
 ## 🗄 Database
 
