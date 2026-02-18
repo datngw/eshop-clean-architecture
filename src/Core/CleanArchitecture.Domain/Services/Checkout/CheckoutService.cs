@@ -10,7 +10,8 @@ public class CheckoutService : IDomainService
 {
     public Order Checkout(Basket basket, UserInformation userInfomation)
     {
-        Order order = Order.Create(basket, userInfomation);
+        var orderItems = basket.BasketProductItems.Select(x => new OrderItemDto(x.ProductId, x.Quantity, x.Product.Price));
+        Order order = Order.Create(basket.UserId, userInfomation, orderItems);
         basket.Clear();
 
         return order;

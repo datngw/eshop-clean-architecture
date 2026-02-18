@@ -49,7 +49,7 @@ public class CheckoutCommandHandler : ICommandHandler<CheckoutCommand, Guid>
         // Persistence Logic
         await _orderRepository.AddAsync(order, cancellationToken);
         // Update Basket (cleared)
-        // await _basketRepository.UpdateAsync(basket, cancellationToken); // EF Core tracking might handle this if loaded?
+        await _basketRepository.UpdateAsync(basket, cancellationToken);
 
         return order.Id;
     }
