@@ -1,6 +1,5 @@
 ﻿using CleanArchitecture.Domain.AggregatesModels.Products;
-using CleanArchitecture.Domain.Common;
-using System.ComponentModel.DataAnnotations.Schema;
+
 
 namespace CleanArchitecture.Domain.AggregatesModels.Baskets;
 

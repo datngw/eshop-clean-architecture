@@ -11,8 +11,20 @@ public sealed class BasketProductItemConfiguration : IEntityTypeConfiguration<Ba
         builder.Property(b => b.ProductId).IsRequired();
         builder.Property(b => b.BasketId).IsRequired();
 
+        builder.Property(b => b.Price)
+            .IsRequired()
+            .HasColumnType("decimal(18,2)");
+
+        builder.Property(b => b.ProductName)
+            .IsRequired()
+            .HasMaxLength(200);
+
         builder.HasOne<Basket>()
             .WithMany(b => b.BasketProductItems)
             .HasForeignKey(b => b.BasketId);
+            
+        builder.HasOne(b => b.Product)
+            .WithMany()
+            .HasForeignKey(b => b.ProductId);
     }
 }
