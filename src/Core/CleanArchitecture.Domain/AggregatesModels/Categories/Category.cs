@@ -13,15 +13,18 @@ public sealed class Category : BaseEntityRoot
 
     public static Category Create(string name)
     {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Category name cannot be empty", nameof(name));
+
         Category category = new Category(name);
         return category;
     }
 
-    public Category Update(string name)
+    public void Update(string name)
     {
-        if (name is not null && Name.Equals(name) is not true)
-            Name = name;
-
-        return this;
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Category name cannot be empty", nameof(name));
+            
+        Name = name;
     }
 }

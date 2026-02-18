@@ -10,8 +10,11 @@ public record UserInformation
 
     public UserInformation(string name, Phone phone, Address address)
     {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Name cannot be empty", nameof(name));
+            
         Name = name;
-        Phone = phone;
-        Address = address;
+        Phone = phone ?? throw new ArgumentNullException(nameof(phone));
+        Address = address ?? throw new ArgumentNullException(nameof(address));
     }
 }

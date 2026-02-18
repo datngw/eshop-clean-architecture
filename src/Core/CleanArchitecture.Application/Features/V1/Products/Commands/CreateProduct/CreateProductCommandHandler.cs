@@ -24,9 +24,11 @@ public sealed class CreateProductCommandHandler : ICommandHandler<CreateProductC
 
     public async Task<Result<Guid>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
-        var category = await _categoryRepository.GetByIdAsync(request.CategoryId);
-        if (category == null)
+        var category = await _categoryRepository.GetByIdAsync(request.CategoryId, cancellationToken);
+        if (category is null)
+        {
             return Result.Failure<Guid>(CategoryErrors.NotFound);
+        }
 
         string? imagePath = request.Image is not null ?
             await _fileStorageService.UploadAsync<Product>(

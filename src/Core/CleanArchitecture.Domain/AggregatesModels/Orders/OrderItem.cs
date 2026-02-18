@@ -25,6 +25,12 @@ public class OrderItem : BaseEntity
 
     public static OrderItem Create(Guid orderId, Guid productId, int quantity, decimal price)
     {
+        if (quantity <= 0)
+            throw new ArgumentException("Quantity must be greater than zero", nameof(quantity));
+
+        if (price < 0)
+            throw new ArgumentException("Price cannot be negative", nameof(price));
+
         OrderItem orderItem = new OrderItem(
             orderId,
             productId,

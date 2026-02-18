@@ -13,40 +13,41 @@ public sealed class AddBasketProductItemCommandHandler : ICommandHandler<AddBask
     private readonly IBasketRepository _basketRepository;
     private readonly ICurrentUser _currentUser;
     private readonly IProductRepository _productRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
     public AddBasketProductItemCommandHandler(
         IBasketRepository basketRepository,
         ICurrentUser currentUser,
-        IProductRepository productRepository)
+        IProductRepository productRepository,
+        IUnitOfWork unitOfWork)
     {
         _basketRepository = basketRepository ?? throw new ArgumentNullException(nameof(basketRepository));
         _currentUser = currentUser ?? throw new ArgumentNullException(nameof(currentUser));
         _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
     public async Task<Result<Guid>> Handle(AddBasketProductItemCommand request, CancellationToken cancellationToken)
     {
+        var product = await _productRepository.GetByIdAsync(request.ProductId, cancellationToken);
+        if (product is null)
+            return Result.Failure<Guid>(ProductErrors.NotFound);
+
         Guid userId = _currentUser.GetUserId();
         if (userId.Equals(Guid.Empty) is true)
             throw new UnauthorizedException("Authentication Failed.");
 
-        var product = await _productRepository.GetByIdAsync(request.ProductId);
-        if (product is null)
-            return Result.Failure<Guid>(ProductErrors.NotFound);
-
-        var basket = await _basketRepository.FirstOrDefaultAsync(new BasketByUserIdWithBasketItemSpec(userId), cancellationToken);
+        Basket? basket = await _basketRepository.FirstOrDefaultAsync(new BasketByUserIdWithBasketItemAndProductSpec(userId), cancellationToken);
 
         if (basket is null)
         {
             basket = Basket.Create(userId);
-            basket.AddBasketProductItem(request.ProductId, request.Quantity);
-            await _basketRepository.AddAsync(basket);
+            await _basketRepository.AddAsync(basket, cancellationToken);
         }
-        else
-        {
-            basket.AddBasketProductItem(request.ProductId, request.Quantity);
-            await _basketRepository.UpdateAsync(basket, cancellationToken);
-        }
+
+        basket.AddBasketProductItem(request.ProductId, request.Quantity, product.Price, product.Name);
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return basket.Id;
     }

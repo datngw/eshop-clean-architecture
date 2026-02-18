@@ -33,14 +33,23 @@ public sealed class Product : BaseEntityRoot
 
     public static Product Create(
         string name,
-        string descirtion,
+        string? description,
         decimal price,
-        string imagePath,
+        string? imagePath,
         Guid categoryId)
     {
-        Product product = new Product(
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Product name cannot be empty", nameof(name));
+
+        if (price < 0)
+            throw new ArgumentException("Price cannot be negative", nameof(price));
+
+        if (categoryId == Guid.Empty)
+             throw new ArgumentException("Category ID is required", nameof(categoryId));
+
+        var product = new Product(
             name,
-            descirtion,
+            description,
             price,
             imagePath,
             categoryId);
@@ -48,29 +57,25 @@ public sealed class Product : BaseEntityRoot
         return product;
     }
 
-    public Product Update(
-        string? name,
-        string? description,
-        decimal? price,
-        string? imagePath,
-        Guid? categoryId)
+    public void UpdateDetails(string name, string? description, string? imagePath, Guid categoryId)
     {
-        if (name is not null && Name?.Equals(name) is not true)
-            Name = name;
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Product name cannot be empty", nameof(name));
+            
+        if (categoryId == Guid.Empty)
+             throw new ArgumentException("Category ID is required", nameof(categoryId));
 
-        if (description is not null && Description?.Equals(description) is not true)
-            Description = description;
-
-        if (price.HasValue && Price != price)
-            Price = price.Value;
-
-        if (imagePath is not null && ImagePath?.Equals(imagePath) is not true)
-            ImagePath = imagePath;
-
-        if (categoryId.HasValue && CategoryId.Equals(categoryId.Value) is not true && categoryId.Value != Guid.Empty)
-            CategoryId = categoryId.Value;
-
-        return this;
+        Name = name;
+        Description = description;
+        ImagePath = imagePath;
+        CategoryId = categoryId;
     }
 
+    public void UpdatePrice(decimal newPrice)
+    {
+        if (newPrice < 0)
+            throw new ArgumentException("Price cannot be negative", nameof(newPrice));
+            
+        Price = newPrice;
+    }
 }

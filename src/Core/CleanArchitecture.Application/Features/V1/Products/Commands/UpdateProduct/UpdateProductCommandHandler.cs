@@ -28,25 +28,39 @@ public sealed class UpdateProductCommandHandler : ICommandHandler<UpdateProductC
         if(product == null)
             return Result.Failure<Guid>(ProductErrors.NotFound);
 
-        Category category = await _categoryRepository.GetByIdAsync(request.CategoryId);
-        if (category == null)
-            return Result.Failure<Guid>(CategoryErrors.NotFound);
+        if (request.CategoryId.HasValue && request.CategoryId.Value != Guid.Empty && request.CategoryId != product.CategoryId)
+        {
+            var category = await _categoryRepository.GetByIdAsync(request.CategoryId.Value, cancellationToken);
+            if (category is null)
+                return Result.Failure<Guid>(CategoryErrors.NotFound);
+        }
 
         string? imagePath = request.Image is not null ?
             await _fileStorageService.UploadAsync<Product>(
-                request.Image, 
+                request.Image,
                 FileType.Image, 
-                cancellationToken) 
-            : null;
+                cancellationToken)
+            : product.ImagePath;
 
-        Product productUpdate = product.Update(
-            request.Name, 
-            request.Description, 
-            request.Price,
-            imagePath, 
-            request.CategoryId);
+        // Use new Domain Methods
+        // If price is updated
+        if (request.Price.HasValue)
+        {
+            product.UpdatePrice(request.Price.Value);
+        }
 
-        await _productRepository.UpdateAsync(productUpdate);
+        // Update details (Name, Description, Image, Category)
+        // Since we don't have separate methods for each field yet other than UpdateDetails which takes all,
+        // we might need to pass current values if request values are null.
+        // Product.UpdateDetails(string name, string? description, string? imagePath, Guid categoryId)
+        
+        string name = request.Name ?? product.Name;
+        string? description = request.Description ?? product.Description;
+        Guid categoryId = request.CategoryId ?? product.CategoryId;
+
+        product.UpdateDetails(name, description, imagePath, categoryId);
+
+        await _productRepository.UpdateAsync(product, cancellationToken);
 
         return product.Id;
     }

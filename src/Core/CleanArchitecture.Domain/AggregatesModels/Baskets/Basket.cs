@@ -1,5 +1,5 @@
 ﻿using CleanArchitecture.Domain.Common;
-using System.ComponentModel.DataAnnotations.Schema;
+
 
 namespace CleanArchitecture.Domain.AggregatesModels.Baskets;
 
@@ -21,12 +21,7 @@ public sealed class Basket : BaseEntityRoot
 
     public IReadOnlyCollection<BasketProductItem> BasketProductItems => _bastketProductItems;
 
-    #region NotMapped
-
-    [NotMapped]
     public decimal TotalPrice { get => BasketProductItems.Sum(b => b.Quantity * b.Price); }
-
-    #endregion
 
     public static Basket Create(Guid userId)
     {
@@ -40,13 +35,20 @@ public sealed class Basket : BaseEntityRoot
         return basket;
     }
 
-    public void AddBasketProductItem(Guid productId, int quantity)
+    public void AddBasketProductItem(Guid productId, int quantity, decimal price, string productName)
     {
+        if (quantity <= 0) 
+            throw new ArgumentException("Quantity must be greater than zero", nameof(quantity));
+
         var basketProductItem = _bastketProductItems.FirstOrDefault(b => b.ProductId == productId);
         if (basketProductItem is null)
-            _bastketProductItems.Add(BasketProductItem.Create(this, productId, quantity));
+        {
+            _bastketProductItems.Add(BasketProductItem.Create(this, productId, quantity, price, productName));
+        }
         else
+        {
             basketProductItem.Update(quantity);
+        }
     }
 
     public void RemoveBasketProductItem(Guid productId)

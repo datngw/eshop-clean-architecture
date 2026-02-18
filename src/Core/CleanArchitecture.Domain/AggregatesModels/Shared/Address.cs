@@ -7,6 +7,12 @@ public record Address
 
     public Address(string street, string city)
     {
+        if (string.IsNullOrWhiteSpace(street))
+            throw new ArgumentException("Street cannot be empty", nameof(street));
+            
+        if (string.IsNullOrWhiteSpace(city))
+            throw new ArgumentException("City cannot be empty", nameof(city));
+
         Street = street;
         City = city;
     }
