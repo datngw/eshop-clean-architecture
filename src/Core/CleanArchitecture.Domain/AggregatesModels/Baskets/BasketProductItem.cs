@@ -1,4 +1,5 @@
 ﻿using CleanArchitecture.Domain.AggregatesModels.Products;
+using CleanArchitecture.Domain.Common;
 
 
 namespace CleanArchitecture.Domain.AggregatesModels.Baskets;

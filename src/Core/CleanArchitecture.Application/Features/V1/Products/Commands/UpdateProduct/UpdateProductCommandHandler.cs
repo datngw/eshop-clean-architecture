@@ -19,44 +19,39 @@ public sealed class UpdateProductCommandHandler : ICommandHandler<UpdateProductC
     {
         _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
         _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
-        _fileStorageService = fileStorageService ?? throw new ArgumentException(nameof(fileStorageService));
+        _fileStorageService = fileStorageService ?? throw new ArgumentNullException(nameof(fileStorageService));
     }
 
     public async Task<Result<Guid>> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
-        Product product = await _productRepository.GetByIdAsync(request.Id);
-        if(product == null)
+        Product? product = await _productRepository.GetByIdAsync(request.Id, cancellationToken);
+        if (product is null)
             return Result.Failure<Guid>(ProductErrors.NotFound);
 
-        if (request.CategoryId.HasValue && request.CategoryId.Value != Guid.Empty && request.CategoryId != product.CategoryId)
+        if (request.CategoryId != Guid.Empty && request.CategoryId != product.CategoryId)
         {
-            var category = await _categoryRepository.GetByIdAsync(request.CategoryId.Value, cancellationToken);
+            var category = await _categoryRepository.GetByIdAsync(request.CategoryId, cancellationToken);
             if (category is null)
                 return Result.Failure<Guid>(CategoryErrors.NotFound);
         }
 
-        string? imagePath = request.Image is not null ?
-            await _fileStorageService.UploadAsync<Product>(
+        string? imagePath = request.Image is not null
+            ? await _fileStorageService.UploadAsync<Product>(
                 request.Image,
-                FileType.Image, 
+                FileType.Image,
                 cancellationToken)
             : product.ImagePath;
 
-        // Use new Domain Methods
-        // If price is updated
-        if (request.Price.HasValue)
+        // Update price only if it actually changed
+        if (request.Price != product.Price)
         {
-            product.UpdatePrice(request.Price.Value);
+            product.UpdatePrice(request.Price);
         }
 
-        // Update details (Name, Description, Image, Category)
-        // Since we don't have separate methods for each field yet other than UpdateDetails which takes all,
-        // we might need to pass current values if request values are null.
-        // Product.UpdateDetails(string name, string? description, string? imagePath, Guid categoryId)
-        
+        // Prepare values for UpdateDetails
         string name = request.Name ?? product.Name;
         string? description = request.Description ?? product.Description;
-        Guid categoryId = request.CategoryId ?? product.CategoryId;
+        Guid categoryId = request.CategoryId != Guid.Empty ? request.CategoryId : product.CategoryId;
 
         product.UpdateDetails(name, description, imagePath, categoryId);
 

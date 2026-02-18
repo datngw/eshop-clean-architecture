@@ -13,18 +13,15 @@ public sealed class AddBasketProductItemCommandHandler : ICommandHandler<AddBask
     private readonly IBasketRepository _basketRepository;
     private readonly ICurrentUser _currentUser;
     private readonly IProductRepository _productRepository;
-    private readonly IUnitOfWork _unitOfWork;
 
     public AddBasketProductItemCommandHandler(
         IBasketRepository basketRepository,
         ICurrentUser currentUser,
-        IProductRepository productRepository,
-        IUnitOfWork unitOfWork)
+        IProductRepository productRepository)
     {
         _basketRepository = basketRepository ?? throw new ArgumentNullException(nameof(basketRepository));
         _currentUser = currentUser ?? throw new ArgumentNullException(nameof(currentUser));
         _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
-        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
     public async Task<Result<Guid>> Handle(AddBasketProductItemCommand request, CancellationToken cancellationToken)
@@ -46,9 +43,7 @@ public sealed class AddBasketProductItemCommandHandler : ICommandHandler<AddBask
         }
 
         basket.AddBasketProductItem(request.ProductId, request.Quantity, product.Price, product.Name);
-
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
+        
         return basket.Id;
     }
 }

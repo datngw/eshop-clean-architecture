@@ -7,15 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="8.0.0" />
-    <PackageReference Include="MediatR" Version="12.2.0" />
+    <Compile Remove="AggregatesModels\Baskets\Specifications\**" />
+    <Compile Remove="AggregatesModels\Categories\Specifications\**" />
+    <Compile Remove="AggregatesModels\Products\Specifications\**" />
+    <Compile Remove="AggregatesModels\Products\ValueObjects\**" />
+    <EmbeddedResource Remove="AggregatesModels\Baskets\Specifications\**" />
+    <EmbeddedResource Remove="AggregatesModels\Categories\Specifications\**" />
+    <EmbeddedResource Remove="AggregatesModels\Products\Specifications\**" />
+    <EmbeddedResource Remove="AggregatesModels\Products\ValueObjects\**" />
+    <None Remove="AggregatesModels\Baskets\Specifications\**" />
+    <None Remove="AggregatesModels\Categories\Specifications\**" />
+    <None Remove="AggregatesModels\Products\Specifications\**" />
+    <None Remove="AggregatesModels\Products\ValueObjects\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="AggregatesModels\Baskets\Specifications\" />
-    <Folder Include="AggregatesModels\Categories\Specifications\" />
-    <Folder Include="AggregatesModels\Products\Specifications\" />
-    <Folder Include="AggregatesModels\Products\ValueObjects\" />
+    <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="MediatR" Version="12.2.0" />
   </ItemGroup>
 
 </Project>
